@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from tox.journal import EnvJournal
 from tox.pytest import ToxProjectCreator
 from tox.tox_env.python.runner import PythonRun
@@ -85,3 +87,22 @@ def test_journal_packge_dir(tmp_path: Path) -> None:
             "type": "dir",
         }
     }
+
+
+@pytest.mark.xfail(raises=AssertionError)  # noqa: SC200
+def test_editable_install(tox_project: ToxProjectCreator) -> None:
+    project = tox_project(
+        {
+            "tox.ini": """
+            [testenv]
+            deps = -e .
+            """,
+            "pyproject.toml": """
+            [build-system]
+            requires = ["setuptools"]
+            build-backend = "setuptools.build_meta"
+            """,
+        }
+    )
+    result = project.run("r")
+    result.assert_success()
