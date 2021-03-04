@@ -102,6 +102,10 @@ def test_editable_install(tox_project: ToxProjectCreator) -> None:
             requires = ["setuptools"]
             build-backend = "setuptools.build_meta"
             """,
+            "setup.py": """
+            from setuptools import setup
+            setup()
+            """,
         }
     )
     result = project.run("r")
